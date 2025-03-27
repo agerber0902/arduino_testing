@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "arduino_testing",
+			"path": "../../../../Development/Personal Projects/arduino_testing"
+		},
+		{
+			"name": "MoistureSensorToBluetooth",
+			"path": "."
+		}
+	],
+	"settings": {}
+}
