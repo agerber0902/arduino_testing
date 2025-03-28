@@ -24,6 +24,8 @@ void setup() {
   // Start the hardware serial port for the Arduino (Serial Monitor)
   Serial.begin(9600);
   
+  pinMode(ledPin, OUTPUT);
+  
   Serial.println("Setup complete");
 }
 
