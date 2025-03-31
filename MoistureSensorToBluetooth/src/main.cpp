@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
+#include <Adafruit_SHT31.h>
 
 // Create a software serial port for HM-10 communication
 SoftwareSerial bluetooth(2, 3); // RX, TX (adjust pins accordingly)
@@ -11,6 +12,9 @@ int ledPin = 13;
 // Variables to store sensor value and threshold
 int sensorValue = 0;
 int moistureThreshold = 500; // Default threshold
+
+// Create an instance of the SHT31-D sensor
+Adafruit_SHT31 sht31 = Adafruit_SHT31();
 
 void sendMessage(String message);
 void checkBluetoothInput();
@@ -25,6 +29,12 @@ void setup() {
   Serial.begin(9600);
   
   pinMode(ledPin, OUTPUT);
+
+  // Initialize the SHT31-D sensor
+  if (!sht31.begin(0x44)) { // 0x44 is the default I2C address
+    Serial.println("Couldn't find SHT31-D sensor!");
+    while (1) delay(1);
+  }
   
   Serial.println("Setup complete");
 }
@@ -52,6 +62,26 @@ void loop() {
     digitalWrite(ledPin, LOW);
   }
   
+  // Read temperature and humidity from the SHT31-D sensor
+  float temperature = sht31.readTemperature();
+  float humidity = sht31.readHumidity();
+
+  if (!isnan(temperature) && !isnan(humidity)) {
+    Serial.print("Temperature: ");
+    Serial.print(temperature);
+    Serial.println(" *C");
+    sendMessage("Temperature: " + String(temperature) + " *C");
+    
+    Serial.print("Humidity: ");
+    Serial.print(humidity);
+    Serial.println(" %");
+    sendMessage("Humidity: " + String(humidity) + " %");
+
+  } else {
+    Serial.println("Failed to read from SHT31-D sensor!");
+    sendMessage("Failed to read from SHT31-D sensor!");
+  }
+
   // Wait for 30 seconds before taking another reading
   delay(1000);
 }
